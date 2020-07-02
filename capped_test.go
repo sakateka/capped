@@ -32,7 +32,36 @@ func TestNewIndexer(t *testing.T) {
 	assert.Equal(t, 2, idx.ReadIndex())
 	assert.Equal(t, 0, idx.Len())
 	assert.Equal(t, -1, idx.ReadIndex())
+	assert.Equal(t, 0, idx.Len())
+	assert.Equal(t, -1, idx.ReadIndex())
+	assert.Equal(t, 0, idx.Len())
+}
 
+func TestWriteAndReadRespectLenght(t *testing.T) {
+	idx := NewIndexer(42)
+	idx.WriteIndex()
+	idx.WriteIndex()
+	idx.WriteIndex()
+
+	expectedWriteIdx := 0
+	for i := 3; i < 86; i++ {
+		expectedWriteIdx = i % idx.size
+		assert.Equal(t, expectedWriteIdx, idx.WriteIndex())
+	}
+
+	expectedReadIdx := mod(expectedWriteIdx+1, idx.size)
+	for i := 42; i > -42; i-- {
+		if i <= 0 {
+			assert.Equal(t, 0, idx.Len())
+			assert.Equal(t, -1, idx.ReadIndex())
+		} else {
+			assert.Equal(t, i, idx.Len())
+			assert.Equal(t, expectedReadIdx, idx.ReadIndex())
+			expectedReadIdx = mod(expectedReadIdx+1, idx.size)
+		}
+	}
+	assert.Equal(t, mod(expectedWriteIdx+1, idx.size), idx.WriteIndex())
+	assert.Equal(t, 1, idx.Len())
 }
 
 func TestReadIndexFollow(t *testing.T) {
