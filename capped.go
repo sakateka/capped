@@ -1,12 +1,12 @@
 package capped
 
-// Indexer it is an index manager for any collection
-// that allows to emulate the behavior of capped collections
+// Indexer it is an index manager for any given collection with access
+// via indexes. It allows to emulate the behavior of capped collections
 type Indexer struct {
 	readIndex  int
 	writeIndex int
 	size       int
-	pushed     bool
+	overwrite     bool
 }
 
 func mod(a, b int) int {
@@ -27,7 +27,7 @@ func NewIndexer(collectionSize int) *Indexer {
 		readIndex:  -1,
 		writeIndex: -1,
 		size:       collectionSize,
-		pushed:     false,
+		overwrite:     false,
 	}
 }
 
@@ -38,11 +38,11 @@ func (i *Indexer) WriteIndex() int {
 
 	if i.readIndex == -1 {
 		if i.writeIndex == 0 && prevIndex != -1 {
-			i.pushed = true
+			i.overwrite = true
 			i.readIndex = 1
 		}
 	} else if i.writeIndex == i.readIndex {
-		i.pushed = true
+		i.overwrite = true
 		i.readIndex = mod(i.writeIndex+1, i.size)
 	}
 	return i.writeIndex
@@ -57,8 +57,8 @@ func (i *Indexer) ReadIndex() int {
 	if nextIndex == mod(i.writeIndex+1, i.size) {
 		return -1
 	}
-	if i.pushed {
-		i.pushed = false
+	if i.overwrite {
+		i.overwrite = false
 		return i.readIndex
 	}
 	i.readIndex = nextIndex
@@ -76,7 +76,7 @@ func (i *Indexer) Len() int {
 	}
 	size := mod(i.writeIndex-i.readIndex, i.size)
 	if mod(i.writeIndex+1, i.size) == i.readIndex {
-		if i.pushed {
+		if i.overwrite {
 			size++
 		}
 	}
