@@ -6,7 +6,7 @@ type Indexer struct {
 	readIndex  int
 	writeIndex int
 	size       int
-	overwrite     bool
+	overwrite  bool
 }
 
 func mod(a, b int) int {
@@ -27,7 +27,7 @@ func NewIndexer(collectionSize int) *Indexer {
 		readIndex:  -1,
 		writeIndex: -1,
 		size:       collectionSize,
-		overwrite:     false,
+		overwrite:  false,
 	}
 }
 
