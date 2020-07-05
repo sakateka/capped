@@ -32,7 +32,7 @@ func NewIndexer(collectionSize int) *Indexer {
 }
 
 // WriteIndex return the next index where to write to the collection
-func (i *Indexer) WriteIndex() int {
+func (i *Indexer) WriteIndex() (int, bool) {
 	prevIndex := i.writeIndex
 	i.writeIndex = mod(prevIndex+1, i.size)
 
@@ -45,7 +45,7 @@ func (i *Indexer) WriteIndex() int {
 		i.overwrite = true
 		i.readIndex = mod(i.writeIndex+1, i.size)
 	}
-	return i.writeIndex
+	return i.writeIndex, i.overwrite
 }
 
 // ReadIndex return the next index where to read from the collection

@@ -32,9 +32,10 @@ func (e *ExampleBytes) pop() (byte, error) {
 	return e.store[idx], nil
 }
 
-func (e *ExampleBytes) push(b byte) {
-	idx := e.index.WriteIndex()
+func (e *ExampleBytes) push(b byte) bool {
+	idx, overwrite := e.index.WriteIndex()
 	e.store[idx] = b
+	return overwrite
 }
 
 func TestCappedBytes(t *testing.T) {
@@ -74,9 +75,10 @@ func (e *ExampleStrings) pop() (string, error) {
 	return e.store[idx], nil
 }
 
-func (e *ExampleStrings) push(s string) {
-	idx := e.index.WriteIndex()
+func (e *ExampleStrings) push(s string) bool {
+	idx, overwrite := e.index.WriteIndex()
 	e.store[idx] = s
+	return overwrite
 }
 
 func TestCappedStrings(t *testing.T) {
@@ -126,11 +128,12 @@ func (e *ExampleConcurrent) pop() (int, error) {
 	return e.store[idx], nil
 }
 
-func (e *ExampleConcurrent) push(s int) {
+func (e *ExampleConcurrent) push(s int) bool {
 	e.Lock()
 	defer e.Unlock()
-	idx := e.index.WriteIndex()
+	idx, overwrite := e.index.WriteIndex()
 	e.store[idx] = s
+	return overwrite
 }
 
 func TestExampleConcurrent(t *testing.T) {
