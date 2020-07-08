@@ -1,3 +1,5 @@
+![Go](https://github.com/sakateka/capped/workflows/Go/badge.svg?branch=master)
+
 # Capped
 
 Index Manager that allows you to turn any collection
